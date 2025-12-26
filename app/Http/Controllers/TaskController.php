@@ -124,35 +124,39 @@ class TaskController extends Controller
     }
 
 
-    public function completed(Request $request)
-    {
-        $tasks = Task::where('is_completed', true)
-            ->whereHas('todoList', fn ($q) =>
-                $q->where('user_id', $request->user()->id)
-            )
-            ->get();
+ public function completed(Request $request)
+{
+    $tasks = Task::with('todoList')
+        ->where('is_completed', true)
+        ->whereHas('todoList', function ($q) use ($request) {
+            $q->where('user_id', $request->user()->id);
+        })
+        ->get();
 
-        return response()->json([
-            'data' => $tasks,
-            'message' => null,
-            'errors' => null
-        ]);
-    }
+    return response()->json([
+        'data' => $tasks,
+        'message' => null,
+        'errors' => null
+    ]);
+}
 
 
-    public function upcoming(Request $request)
-    {
-        $tasks = Task::whereDate('due_date', '>=', now()->toDateString())
-            ->whereHas('todoList', fn ($q) =>
-                $q->where('user_id', $request->user()->id)
-            )
-            ->orderBy('due_date')
-            ->get();
 
-        return response()->json([
-            'data' => $tasks,
-            'message' => null,
-            'errors' => null
-        ]);
-    }
+public function upcoming(Request $request)
+{
+    $tasks = Task::with('todoList')
+        ->where('is_completed', false)
+        ->whereDate('due_date', '>=', now()->toDateString())
+        ->whereHas('todoList', function ($q) use ($request) {
+            $q->where('user_id', $request->user()->id);
+        })
+        ->orderBy('due_date')
+        ->get();
+
+    return response()->json([
+        'data' => $tasks,
+        'message' => null,
+        'errors' => null
+    ]);
+}
 }

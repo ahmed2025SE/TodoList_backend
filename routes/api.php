@@ -23,4 +23,6 @@ use App\Http\Controllers\TaskController;
     Route::get('tasks-completed', [TaskController::class, 'completed']);
     Route::get('tasks-upcoming',  [TaskController::class, 'upcoming']);
 
+     Route::post('/logout', [AuthController::class, 'logout']);
+
 });

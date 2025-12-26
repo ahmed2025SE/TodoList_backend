@@ -50,4 +50,15 @@ public function signup(Request $request)
         ]);
     }
 
+      public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'data' => null,
+            'message' => 'Logged out successfully',
+            'errors' => null
+        ]);
+    }
+
 }
